@@ -1,0 +1,172 @@
+namespace Task_48
+{
+    internal class Program
+    {
+        static void Main(string[] args)
+        {
+            Console.WriteLine("Для начала симуляции боя нажмите любую клавишу.");
+            Console.ReadKey();
+
+            Buttlefield buttlefield = new Buttlefield();
+            buttlefield.Battle();
+            buttlefield.ShowBattleResult();
+        }
+    }
+
+    class Buttlefield
+    {
+        private Platoon _platoonFirstCountry = new Platoon();
+        private Platoon _platoonSecondCountry = new Platoon();
+        private Platoon _firstPlatoon;
+        private Platoon _secondPlatoon;
+
+        public void Battle()
+        {
+            while (_platoonFirstCountry.GetPlatoonHealth() > 0 && _platoonSecondCountry.GetPlatoonHealth() > 0)
+            {
+                _firstPlatoon = _platoonFirstCountry;
+                _secondPlatoon = _platoonSecondCountry;
+                _platoonFirstCountry.ShowPlatoon();
+                _platoonSecondCountry.ShowPlatoon();
+                _firstPlatoon.TakeDamege(_secondPlatoon.PlatoonDamage);
+                _secondPlatoon.TakeDamege(_firstPlatoon.PlatoonDamage);
+                Console.ReadKey();
+                Console.Clear();
+            }
+        }
+
+        public void ShowBattleResult()
+        {
+            if (_platoonFirstCountry.GetPlatoonHealth() <= 0 && _platoonSecondCountry.GetPlatoonHealth() <= 0)
+            {
+                Console.WriteLine("Ничья, оба взвода погибли");
+            }
+            else if (_platoonFirstCountry.GetPlatoonHealth() <= 0)
+            {
+                Console.WriteLine($"Взвод страны {_secondPlatoon.PlatoonName} победил!");
+            }
+            else if (_platoonSecondCountry.GetPlatoonHealth() <= 0)
+            {
+                Console.WriteLine($"Взвод страны {_firstPlatoon.PlatoonName} победил!");
+            }
+        }
+    }
+
+    class Platoon
+    {
+        public string PlatoonName { get; set; }
+        public int PlatoonDamage { get; set; }
+        
+        private List<Warrior> _warriors = new List<Warrior>();
+        private int _platoonHealth;
+        private int _platoonArmor;
+        private int _numberOfWarriors = 10;
+        private Random _random = new Random();
+
+        public Platoon()
+        {
+            CreateNewPlatoon(PlatoonName, _numberOfWarriors, _warriors, _platoonHealth, _platoonArmor, PlatoonDamage);
+        }
+
+        public void TakeDamege(int totalDamage)
+        {
+            int finalDamage = 0;
+
+            finalDamage = totalDamage;
+
+            _platoonHealth -= finalDamage - _platoonArmor;
+
+            Console.WriteLine($"\nВзвод {PlatoonName} получил {finalDamage} урона, осталось здоровья {_platoonHealth}");
+        }
+
+        public void ShowPlatoon()
+        {
+            Console.WriteLine($"\nВзвод {PlatoonName}");
+            foreach (var worrior in _warriors)
+            {
+                Console.WriteLine($"{worrior.Name}. Здоровье: {worrior.Health}. Броня: {worrior.Armor}. Урон: {worrior.Damage}.");
+            }
+            Console.WriteLine($"\nОбщие характеристики взвода: {PlatoonName}. Здоровье: {_platoonHealth}. Броня: {_platoonArmor}. Урон: {PlatoonDamage}.");
+        }
+        public int GetPlatoonHealth()
+        {
+            return _platoonHealth;
+        }
+
+        private void CreateNewPlatoon(string name, int numberOfWarriors, List<Warrior> Warrior, int totalHealth, int totalArmor, int totalDamage)
+        {
+            Console.WriteLine("\nДайте название взводу:");
+            name = Console.ReadLine();
+
+            for (int i = 0; i < numberOfWarriors; i++)
+            {
+                Warrior.Add(GetWarrior());
+            }
+
+            totalHealth = _warriors.Sum(x => x.Health);
+            totalDamage = _warriors.Sum(x => x.Damage);
+            totalArmor = _warriors.Sum(x => x.Armor);
+
+            PlatoonName = name;
+            PlatoonDamage = totalDamage;
+            _platoonHealth = totalHealth;
+            _platoonArmor = totalArmor;
+        }
+
+        private Warrior GetWarrior()
+        {
+            int minimumNumberClassWarrior = 0;
+            int maximumNumberClassWarrior = 3;
+            int newWarrior = _random.Next(minimumNumberClassWarrior, maximumNumberClassWarrior);
+
+            if (newWarrior == 1)
+            {
+                return new Knight("Рыцарь", 100, 10, 15, 2);
+            }
+            else if (newWarrior == 2)
+            {
+                return new Сavalier("Кавалерист", 140, 10, 20, 3);
+            }
+            else
+            {
+                return new Archer("Лучник", 80, 5, 60);
+            }
+        }
+    }
+
+    class Warrior
+    {
+        public string Name { get; set; }
+        public int Health { get; protected set; }
+        public int Armor { get; protected set; }
+        public int Damage { get; protected set; }
+
+        public Warrior(string name, int health, int armor, int damage)
+        {
+            Name = name;
+            Health = health;
+            Armor = armor;
+            Damage = damage;
+        }
+
+        public void ShowWarriorStats()
+        {
+            Console.WriteLine($" {Name}: Жизни - {Health},  Броня - {Armor}, Урон - {Damage}");
+        }
+    }
+
+    class Knight : Warrior
+    {
+        public Knight(string name, int health, int armor, int damage, int armorBuff) : base(name, health, armor * armorBuff, damage) { }
+    }
+
+    class Сavalier : Warrior
+    {
+        public Сavalier(string name, int health, int armor, int damage, int damageBuff) : base(name, health, armor, damage * damageBuff) { }
+    }
+
+    class Archer : Warrior
+    {
+        public Archer(string name, int health, int armor, int damage) : base(name, health, armor, damage) { }
+    }
+}
