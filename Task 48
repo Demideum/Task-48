@@ -54,15 +54,15 @@ namespace Task_48
 
     class Platoon
     {
-        public string PlatoonName { get; set; }
-        public int PlatoonDamage { get; set; }
-        
         private List<Warrior> _warriors = new List<Warrior>();
         private int _platoonHealth;
         private int _platoonArmor;
         private int _numberOfWarriors = 10;
         private Random _random = new Random();
 
+        public string PlatoonName { get; private set; }
+        public int PlatoonDamage { get; private set; }
+        
         public Platoon()
         {
             CreateNewPlatoon(PlatoonName, _numberOfWarriors, _warriors, _platoonHealth, _platoonArmor, PlatoonDamage);
@@ -136,7 +136,7 @@ namespace Task_48
 
     class Warrior
     {
-        public string Name { get; set; }
+        public string Name { get; protected set; }
         public int Health { get; protected set; }
         public int Armor { get; protected set; }
         public int Damage { get; protected set; }
